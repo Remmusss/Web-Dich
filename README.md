@@ -1,6 +1,6 @@
 ## Setup
-Create a \`.env.local\` file in the root directory and add your Gemini API key:
-\`\`\`
+Create a `.env.local` file in the root directory and add your Gemini API key:
+```
 
 NEXT_PUBLIC_GEMINI_API_KEY=
 
@@ -22,6 +22,6 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 
 NEXT_PUBLIC_FIREBASE_APP_ID=
 
-\`\`\`
+```
 
-The application will be available at http://localhost:3000
+The application will be available at `http://localhost:3000`
