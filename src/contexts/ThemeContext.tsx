@@ -7,36 +7,65 @@ type Theme = 'light' | 'dark';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
+  // Update theme in localStorage and document
+  const applyTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  // Initialize theme
   useEffect(() => {
+    setMounted(true);
+    
     // Check for saved theme preference or system preference
     const savedTheme = localStorage.getItem('theme') as Theme;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+      applyTheme(savedTheme);
     } else if (systemPrefersDark) {
-      setTheme('dark');
-      document.documentElement.classList.add('dark');
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
     }
+    
+    // Add a smooth transition after initial load
+    setTimeout(() => {
+      document.documentElement.classList.add('transition-colors', 'duration-300');
+    }, 100);
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    applyTheme(newTheme);
+  };
+  
+  const setTheme = (newTheme: Theme) => {
+    applyTheme(newTheme);
   };
 
+  // Prevent flashing during SSR
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

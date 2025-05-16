@@ -4,14 +4,14 @@ export interface Language {
 }
 
 export const SUPPORTED_LANGUAGES: Language[] = [
-    { code: 'vi', name: 'Tiếng Việt' },
-    { code: 'en', name: 'Tiếng Anh' },
-    { code: 'zh', name: 'Tiếng Trung' },
-    { code: 'ja', name: 'Tiếng Nhật' },
-    { code: 'ko', name: 'Tiếng Hàn' },
-    { code: 'fr', name: 'Tiếng Pháp' },
-    { code: 'de', name: 'Tiếng Đức' },
-    { code: 'ru', name: 'Tiếng Nga' },
+    { code: 'vi', name: 'Vietnamese' },
+    { code: 'en', name: 'English' },
+    { code: 'zh', name: 'Chinese' },
+    { code: 'ja', name: 'Japanese' },
+    { code: 'ko', name: 'Korean' },
+    { code: 'fr', name: 'French' },
+    { code: 'de', name: 'German' },
+    { code: 'ru', name: 'Russian' },
     { code: 'auto', name: 'Detect Language' }
 ];
 

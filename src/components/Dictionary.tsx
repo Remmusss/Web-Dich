@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MdClose } from 'react-icons/md'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 import { dictionaryService } from '@/lib/dictionary-service'
 import { useTabState } from '@/hooks/useTabState'
 
@@ -54,7 +54,7 @@ export default function Dictionary({ isOpen, onClose }: DictionaryProps) {
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors duration-200"
           >
-            <MdClose className="h-6 w-6 text-gray-500" />
+            <XMarkIcon className="h-6 w-6 text-gray-500" />
           </button>
         </div>
         

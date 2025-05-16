@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { MdAutoFixHigh, MdContentCopy, MdTextFields } from 'react-icons/md'
 import { 
   ClipboardDocumentIcon, 
   ArrowDownTrayIcon,
@@ -10,9 +9,10 @@ import {
   DocumentTextIcon
 } from '@heroicons/react/24/outline'
 import { aiService } from '@/lib/ai-service'
-import { useToast, ToastContainer } from '@/utils/toast'
+import { useToast } from '@/hooks/use-toast'
 import ReactMarkdown from 'react-markdown'
 import { useDebounce } from '@/hooks/useDebounce'
+import { SparklesIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 
 export default function TextEnhancement() {
     const [mounted, setMounted] = useState(false)
@@ -26,7 +26,7 @@ export default function TextEnhancement() {
     const [isDragging, setIsDragging] = useState(false)
     const textRef = useRef<HTMLTextAreaElement>(null)
     const enhancedTextRef = useRef<HTMLDivElement>(null)
-    const { loading, success, error: toastError, removeToast } = useToast()
+    const { toast } = useToast()
     const debouncedText = useDebounce(text, 500)
 
     useEffect(() => {
@@ -55,16 +55,27 @@ export default function TextEnhancement() {
         if (!text.trim()) return
 
         setIsEnhancing(true)
-        const loadingId = loading('Đang cải thiện văn bản...')
+        toast({
+            title: "Đang cải thiện văn bản...",
+            description: "Vui lòng đợi trong giây lát",
+            variant: "default",
+        })
+        
         try {
             const result = await aiService.enhanceText(text)
             setEnhancedText(result)
-            removeToast(loadingId)
-            success('Cải thiện văn bản thành công!')
+            toast({
+                title: "Thành công",
+                description: "Cải thiện văn bản thành công!",
+                variant: "default",
+            })
         } catch (err) {
             console.error('Text enhancement error:', err)
-            removeToast(loadingId)
-            toastError('Có lỗi xảy ra khi cải thiện văn bản. Vui lòng thử lại.')
+            toast({
+                title: "Lỗi",
+                description: "Có lỗi xảy ra khi cải thiện văn bản. Vui lòng thử lại.",
+                variant: "destructive",
+            })
         } finally {
             setIsEnhancing(false)
         }
@@ -73,10 +84,18 @@ export default function TextEnhancement() {
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text)
-            success('Đã sao chép vào clipboard!')
+            toast({
+                title: "Thành công",
+                description: "Đã sao chép vào clipboard!",
+                variant: "default",
+            })
         } catch (err) {
             console.error('Copy error:', err)
-            toastError('Không thể sao chép văn bản')
+            toast({
+                title: "Lỗi",
+                description: "Không thể sao chép văn bản",
+                variant: "destructive",
+            })
         }
     }
 
@@ -191,7 +210,7 @@ export default function TextEnhancement() {
                             className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-white text-sm sm:text-base font-medium transition-all ${
                                 isEnhancing || !text.trim()
                                     ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-primary hover:bg-primary/90 shadow-sm hover:shadow-md'
+                                    : 'bg-gray-800 hover:bg-gray-900 shadow-sm hover:shadow-md'
                             }`}
                         >
                             {isEnhancing ? 'Enhancing...' : 'Enhance'}
@@ -206,7 +225,7 @@ export default function TextEnhancement() {
                             }`}
                             title="Toggle Markdown rendering"
                         >
-                            <MdTextFields className="h-4 w-4" />
+                            <DocumentTextIcon className="h-5 w-5" />
                             Markdown
                         </button>
                     </div>
@@ -230,7 +249,7 @@ export default function TextEnhancement() {
                                     }`}
                                     title="Toggle Markdown rendering"
                                 >
-                                    <MdTextFields className="h-3 w-3" />
+                                    <DocumentTextIcon className="h-3 w-3" />
                                     MD
                                 </button>
                             </div>
@@ -240,7 +259,7 @@ export default function TextEnhancement() {
                                     onClick={handleTextPaste}
                                     title="Paste from clipboard"
                                 >
-                                    <MdContentCopy className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
+                                    <ClipboardIcon className="h-5 w-5" />
                                     <span className="text-xs sm:text-sm"></span>
                                 </button>
                                 <button 
@@ -248,7 +267,7 @@ export default function TextEnhancement() {
                                     onClick={() => handleCopy(text)}
                                     title="Copy to clipboard"
                                 >
-                                    <ClipboardDocumentIcon className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
+                                    <ClipboardIcon className="h-5 w-5" />
                                     <span className="text-xs sm:text-sm"></span>
                                 </button>
                                 <button 
@@ -282,7 +301,7 @@ export default function TextEnhancement() {
                                 onDragOver={handleDragOver}
                                 onDrop={handleDrop}
                                 style={{ overflow: 'hidden' }}
-                                className="w-full p-4 sm:p-6 resize-none focus:outline-none text-base min-h-[300px] sm:min-h-[500px] bg-transparent"
+                                className="w-full p-4 sm:p-6 resize-none focus:outline-none text-base min-h-[300px] sm:min-h-[500px] bg-transparent border border-gray-50"
                                 placeholder={isDragging ? 'Drop text file here' : 'Enter text to enhance...'}
                             />
                         </div>
@@ -299,7 +318,7 @@ export default function TextEnhancement() {
                                     onClick={() => handleCopy(enhancedText)}
                                     title="Copy to clipboard"
                                 >
-                                    <ClipboardDocumentIcon className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
+                                    <ClipboardIcon className="h-5 w-5" />
                                     <span className="text-xs sm:text-sm"></span>
                                 </button>
                                 <button
@@ -348,7 +367,7 @@ export default function TextEnhancement() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
                                     <div className="w-12 sm:w-16 h-12 sm:h-16 rounded-2xl bg-gray-100 flex items-center justify-center">
-                                        <MdAutoFixHigh className="h-6 sm:h-8 w-6 sm:w-8 text-gray-300" />
+                                        <SparklesIcon className="h-5 w-5" />
                                     </div>
                                     <span className="text-sm sm:text-base font-medium text-center">
                                         Enter text to enhance
@@ -371,8 +390,6 @@ export default function TextEnhancement() {
                     <span className="text-sm sm:text-base font-medium">{error}</span>
                 </div>
             )}
-
-            <ToastContainer />
         </div>
     )
 } 

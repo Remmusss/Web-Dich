@@ -1,5 +1,5 @@
 import { useAuth } from '../contexts/AuthContext';
-import { MdLogout } from 'react-icons/md';
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 export default function GoogleLoginButton() {
   const { user, signInWithGoogle, logout } = useAuth();
@@ -23,7 +23,7 @@ export default function GoogleLoginButton() {
             className="p-2 sm:px-4 sm:py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 flex items-center gap-2"
             aria-label="Đăng xuất"
           >
-            <MdLogout className="w-5 h-5" />
+            <ArrowRightOnRectangleIcon className="w-5 h-5" />
             <span className="hidden sm:block">Đăng xuất</span>
           </button>
         </div>

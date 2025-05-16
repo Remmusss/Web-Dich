@@ -19,7 +19,7 @@ interface Message {
 }
 
 export default function ConversationTranslator() {
-    const [myLanguage, setMyLanguage] = useTabState('conversationMyLanguage', 'auto')
+    const [myLanguage, setMyLanguage] = useTabState('conversationMyLanguage', 'en')
     const [theirLanguage, setTheirLanguage] = useTabState('conversationTheirLanguage', 'en')
     const [myText, setMyText] = useState('')
     const [theirText, setTheirText] = useState('')
@@ -31,6 +31,19 @@ export default function ConversationTranslator() {
     
     // Add ref for chat container
     const chatContainerRef = useRef<HTMLDivElement>(null)
+
+    // Prevent same language selection
+    useEffect(() => {
+        if (myLanguage === theirLanguage) {
+            // If they become the same, pick a different language for theirLanguage
+            const availableLanguages = SUPPORTED_LANGUAGES.filter(
+                lang => lang.code !== 'auto' && lang.code !== myLanguage
+            );
+            if (availableLanguages.length > 0) {
+                setTheirLanguage(availableLanguages[0].code);
+            }
+        }
+    }, [myLanguage, theirLanguage, setTheirLanguage]);
 
     // Auto scroll to bottom when messages change
     useEffect(() => {
@@ -186,8 +199,8 @@ export default function ConversationTranslator() {
     }
 
     return (
-        <div className="space-y-4 max-w-5xl mx-auto">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="mx-auto px-2 py-8 mt-2 max-w-5xl">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                 {/* Language Selection */}
                 <div className="p-3 sm:p-4 border-b border-gray-100">
                     <div className="flex flex-col gap-3">
@@ -220,7 +233,9 @@ export default function ConversationTranslator() {
                                     onChange={(e) => setMyLanguage(e.target.value)}
                                     className="w-full p-2.5 sm:p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 appearance-none bg-gray-50/50"
                                 >
-                                    {SUPPORTED_LANGUAGES.map((lang) => (
+                                    {SUPPORTED_LANGUAGES.filter(lang => 
+                                        lang.code !== 'auto' && lang.code !== theirLanguage
+                                    ).map((lang) => (
                                         <option key={lang.code} value={lang.code}>
                                             {lang.name}
                                         </option>
@@ -238,7 +253,9 @@ export default function ConversationTranslator() {
                                     onChange={(e) => setTheirLanguage(e.target.value)}
                                     className="w-full p-2.5 sm:p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 appearance-none bg-gray-50/50"
                                 >
-                                    {SUPPORTED_LANGUAGES.filter(lang => lang.code !== 'auto').map((lang) => (
+                                    {SUPPORTED_LANGUAGES.filter(lang => 
+                                        lang.code !== 'auto' && lang.code !== myLanguage
+                                    ).map((lang) => (
                                         <option key={lang.code} value={lang.code}>
                                             {lang.name}
                                         </option>
@@ -365,9 +382,9 @@ export default function ConversationTranslator() {
 
                 {/* Input Area */}
                 <div className="p-3 sm:p-4 border-t border-gray-100 space-y-3">
-                    <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="flex flex-row gap-3 sm:gap-4">
                         {/* My Message Input */}
-                        <div className="space-y-2">
+                        <div className="flex-1 space-y-2">
                             <div className="relative">
                                 <textarea
                                     value={myText}
@@ -414,7 +431,7 @@ export default function ConversationTranslator() {
                         </div>
 
                         {/* Their Message Input */}
-                        <div className="space-y-2">
+                        <div className="flex-1 space-y-2">
                             <div className="relative">
                                 <textarea
                                     value={theirText}

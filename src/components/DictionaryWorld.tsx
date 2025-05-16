@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { DocumentArrowUpIcon, LanguageIcon } from '@heroicons/react/24/outline'
-import { MdVolumeUp, MdBookmark, MdBookmarkBorder, MdClose } from 'react-icons/md'
+import { dictionaryService } from '@/lib/dictionary-service'
+import { useTabState } from '@/hooks/useTabState'
+import { SpeakerWaveIcon, XMarkIcon, BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
+import { BookmarkIcon, DocumentArrowUpIcon, LanguageIcon } from '@heroicons/react/24/outline'
+import { VocabularyService } from '@/lib/vocabulary-service'
+import { SUPPORTED_LANGUAGES } from '@/constants/languages'
 import { useAuth } from '@/contexts/AuthContext'
 import { db } from '@/lib/firebase'
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
-import { VocabularyService } from '@/lib/vocabulary-service'
-import { SUPPORTED_LANGUAGES } from '@/constants/languages'
 
 interface VocabularyItem {
   id?: string;
@@ -195,7 +197,7 @@ export default function DictionaryWorld() {
                 className={`px-4 py-3 rounded-xl text-white font-medium transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-[1.02] ${
                   isSearching || !searchWord.trim()
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg'
+                    : 'bg-gray-800 hover:bg-gray-900 shadow-md hover:shadow-lg'
                 }`}
               >
                 {isSearching ? (
@@ -226,7 +228,7 @@ export default function DictionaryWorld() {
 
           {error && (
             <div className="p-3 bg-red-50 border-2 border-red-200 rounded-xl text-red-600 flex items-center gap-2 text-sm">
-              <MdClose className="h-4 w-4 flex-shrink-0" />
+              <XMarkIcon className="h-4 w-4 flex-shrink-0" />
               <p>{error}</p>
             </div>
           )}
@@ -242,9 +244,9 @@ export default function DictionaryWorld() {
                       className="text-primary hover:text-primary/80 transition-colors transform hover:scale-110 duration-200"
                     >
                       {isBookmarked(searchResult.word) ? (
-                        <MdBookmark className="h-5 w-5" />
+                        <BookmarkSolidIcon className="h-5 w-5" />
                       ) : (
-                        <MdBookmarkBorder className="h-5 w-5" />
+                        <BookmarkIcon className="h-5 w-5" />
                       )}
                     </button>
                   </div>
@@ -254,7 +256,7 @@ export default function DictionaryWorld() {
                   onClick={() => playPronunciation(searchResult.word, targetLanguage)}
                   className="p-2 text-gray-400 hover:text-primary transition-colors transform hover:scale-110 duration-200"
                 >
-                  <MdVolumeUp className="h-5 w-5" />
+                  <SpeakerWaveIcon className="h-5 w-5" />
                 </button>
               </div>
 
